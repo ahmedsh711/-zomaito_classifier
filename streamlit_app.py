@@ -1,12 +1,8 @@
 import streamlit as st
-import sys
-import os
 import pandas as pd
 
-# Add src folder to sys.path (so Python can find your modules)
-sys.path.append(os.path.abspath("../src"))
-
-from inference import load_model, load_feature_names, predict
+# Import from src folder
+from src.inference import load_model, load_feature_names, predict
 
 # Page config
 st.set_page_config(page_title="Restaurant Success Predictor", layout="wide")
@@ -14,14 +10,14 @@ st.set_page_config(page_title="Restaurant Success Predictor", layout="wide")
 # Load model and features
 @st.cache_resource
 def load_resources():
-    model = load_model('../models/restaurant_model.pkl')
-    feature_names = load_feature_names('../data/preprocessed/feature_names.pkl')
+    model = load_model("models/restaurant_model.pkl")
+    feature_names = load_feature_names("data/preprocessed/feature_names.pkl")
     return model, feature_names
 
 try:
     model, feature_names = load_resources()
-except:
-    st.error("Model not found! Please run train.py first.")
+except FileNotFoundError:
+    st.error("Model or feature names file not found! Make sure they exist.")
     st.stop()
 
 # Title
@@ -35,7 +31,7 @@ st.sidebar.header("Restaurant Features")
 online_order = st.sidebar.selectbox("Online Order Available?", ["Yes", "No"])
 book_table = st.sidebar.selectbox("Table Booking Available?", ["Yes", "No"])
 votes = st.sidebar.number_input("Number of Votes", min_value=0, max_value=10000, value=100)
-cost_for_two = st.sidebar.number_input("Approx Cost for Two ", min_value=0, max_value=5000, value=500)
+cost_for_two = st.sidebar.number_input("Approx Cost for Two", min_value=0, max_value=5000, value=500)
 
 # Location features
 location_freq = st.sidebar.slider("Location Popularity (restaurants in area)", 0, 3000, 1000)
